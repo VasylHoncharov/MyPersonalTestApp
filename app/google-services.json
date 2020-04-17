@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "867320677423",
+    "firebase_url": "https://test-vgsoft-1app.firebaseio.com",
+    "project_id": "test-vgsoft-1app",
+    "storage_bucket": "test-vgsoft-1app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:867320677423:android:619349909f9978cc3632da",
+        "android_client_info": {
+          "package_name": "com.vgsoft.mypersonaltestapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "867320677423-hov7arjap6ep1l6kh0km4oa2ivdru71v.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDgm6nk1Tx5W0vZ8yBP0NJRpjaJ6PlQwPg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "867320677423-hov7arjap6ep1l6kh0km4oa2ivdru71v.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
