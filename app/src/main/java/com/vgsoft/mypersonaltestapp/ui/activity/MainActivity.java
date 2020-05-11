@@ -14,12 +14,11 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
 
 import com.vgsoft.mypersonaltestapp.R;
+import com.vgsoft.mypersonaltestapp.realm.RealmController;
 import com.vgsoft.mypersonaltestapp.ui.adapters.DrawerAdapter;
 import com.vgsoft.mypersonaltestapp.ui.fragments.BaseFragment;
-import com.vgsoft.mypersonaltestapp.ui.fragments.EmailFragment;
 import com.vgsoft.mypersonaltestapp.ui.fragments.InfoFragment;
 import com.vgsoft.mypersonaltestapp.ui.fragments.MainFragment;
-import com.vgsoft.mypersonaltestapp.ui.fragments.MapFragment;
 import com.vgsoft.mypersonaltestapp.ui.models.ItemModel;
 
 public class MainActivity extends AppCompatActivity {
@@ -40,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
         mItemTitles = getResources().getStringArray(R.array.drawer_items);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerListView = (ListView) findViewById(R.id.left_drawer);
-
+        new RealmController(getApplicationContext()).removeAll();
         setupToolbar();
 
         ItemModel[] dItems = fillDataModel();
@@ -55,16 +54,15 @@ public class MainActivity extends AppCompatActivity {
 
         mDrawerLayout.addDrawerListener(mDrawerToggle);
         setupDrawerToggle();
-        setFragment(new MainFragment(), 0);
+        setFragment(new MainFragment(), 1);
 
     }
 
     // формируем массив с данными для адаптера
     private ItemModel[] fillDataModel() {
         return new ItemModel[]{
-                new ItemModel(android.R.drawable.ic_dialog_email, "Связаться"),
-                new ItemModel(android.R.drawable.ic_dialog_info, "Подробнее"),
-                new ItemModel(android.R.drawable.ic_dialog_map, "Посмотреть на карте")
+                new ItemModel(R.drawable.ic_video_rate, mItemTitles[0]),
+                new ItemModel(R.drawable.ic_info, mItemTitles[1])
         };
     }
 
@@ -79,16 +77,13 @@ public class MainActivity extends AppCompatActivity {
             // вызываем соответственный ему фрагмент
             switch (position) {
                 case 0:
-                    fragment = new MainFragment();
+                    mDrawerLayout.closeDrawer(mDrawerListView);
                     break;
                 case 1:
-                    fragment = new EmailFragment();
+                    fragment = new MainFragment();
                     break;
                 case 2:
                     fragment = new InfoFragment();
-                    break;
-                case 3:
-                    fragment = new MapFragment();
                     break;
 
                 default:
@@ -101,11 +96,11 @@ public class MainActivity extends AppCompatActivity {
     private void setFragment(BaseFragment fragment, int position) {
         if (fragment != null) {
             FragmentManager fragmentManager = getSupportFragmentManager();
-            fragmentManager.beginTransaction().replace(R.id.content_frame, fragment).commit();
+            fragmentManager.beginTransaction().addToBackStack(fragment.getClass().getName()).replace(R.id.content_frame, fragment).commit();
 
             mDrawerListView.setItemChecked(position, true);
             mDrawerListView.setSelection(position);
-            setTitle(mItemTitles[position]);
+            setTitle(mItemTitles[--position]);
             mDrawerLayout.closeDrawer(mDrawerListView);
         }
 
@@ -126,6 +121,20 @@ public class MainActivity extends AppCompatActivity {
     protected void onPostCreate(Bundle savedInstanceState) {
         super.onPostCreate(savedInstanceState);
         mDrawerToggle.syncState();
+    }
+
+    @Override
+    public void onBackPressed() {
+
+        int count = getSupportFragmentManager().getBackStackEntryCount();
+
+        if (count <= 1) {
+            //additional code
+            finish();
+        } else {
+            getSupportFragmentManager().popBackStack();
+        }
+
     }
 
     void setupToolbar() {

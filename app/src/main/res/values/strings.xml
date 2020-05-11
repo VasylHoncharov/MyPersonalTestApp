@@ -3,15 +3,14 @@
     <string name="item_name">Название элемента</string>
     <string name="image_icon_desc">Иконка элемента</string>
 
-    <string name="fragment_info_text">Это макет fragment_info.xml</string>
-    <string name="fragment_email_text">Это fragment_email.xml</string>
-    <string name="map_fragment_text">Это map_fragment.xml</string>
+    <string name="fragment_info_text">Это приложение разрабатывалось Василием Гончаровым как простое тестовое приложение. \nНа этой странице может быть, например контактная информация.\n e-mail: vga77m@gmail.com</string>
     <string name="main">Главная</string>
+    <string name="movie_poster">Постер</string>
+    <string name="something_went_wrong">что-то пошло не так</string>
+
 
     <string-array name="drawer_items">
         <item>Главная</item>
-        <item>Связаться</item>
-        <item>Подробнее</item>
-        <item>Посмотреть на карте</item>
+        <item>Обо мне</item>
     </string-array>
 </resources>

@@ -4,14 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/label_email"
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/rv_movies"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_marginTop="100dp"
-        android:gravity="center_horizontal"
-        android:text="@string/main"
-        android:textSize="45sp"
-        android:textStyle="bold" />
+        android:layout_height="wrap_content" />
+
 </RelativeLayout>

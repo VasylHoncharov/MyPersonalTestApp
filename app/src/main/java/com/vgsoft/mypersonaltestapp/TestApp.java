@@ -4,6 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import android.content.res.Resources;
 
+import io.realm.Realm;
+
 
 public class TestApp extends Application {
     private static TestApp singleton;
@@ -21,6 +23,7 @@ public class TestApp extends Application {
     public final void onCreate() {
         super.onCreate();
         singleton = this;
+        Realm.init(this);
         TestApp.context = getApplicationContext();
         resources = getResources();
     }
