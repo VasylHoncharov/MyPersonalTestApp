@@ -1,6 +1,7 @@
 package com.vgsoft.mypersonaltestapp.presenters;
 
-import com.vgsoft.mypersonaltestapp.model.MoviePageResult;
+import com.vgsoft.mypersonaltestapp.TestApp;
+import com.vgsoft.mypersonaltestapp.entiti.MoviePageResult;
 import com.vgsoft.mypersonaltestapp.network.GetMovieDataService;
 import com.vgsoft.mypersonaltestapp.network.RetrofitInstance;
 import com.vgsoft.mypersonaltestapp.utility.Utils;
@@ -23,22 +24,22 @@ public class MoviePresenter {
         Call<MoviePageResult> call;
         call = movieDataService.getPopularMovies(page, API_KEY);
 
-        call.enqueue(new Callback<MoviePageResult>() {
-            @Override
-            public void onResponse(Call<MoviePageResult> call, Response<MoviePageResult> response) {
-                MoviePageResult pageResult = response.body();
-                view.onMoviePageResultReceived(pageResult, page);
-            }
+        if (Utils.isNetworkAvailable(TestApp.getAppContext())) {
+            call.enqueue(new Callback<MoviePageResult>() {
+                @Override
+                public void onResponse(Call<MoviePageResult> call, Response<MoviePageResult> response) {
+                    MoviePageResult pageResult = response.body();
+                    view.onMoviePageResultReceived(pageResult, page);
+                }
 
-            @Override
-            public void onFailure(Call<MoviePageResult> call, Throwable t) {
-                Utils.makeToast(t.getMessage());
-            }
-        });
+                @Override
+                public void onFailure(Call<MoviePageResult> call, Throwable t) {
+                    Utils.makeToast(t.getMessage());
+                }
+            });
+        } else {
+            view.onError("Network is unavailable");
+        }
     }
-
-
-
-
 
 }

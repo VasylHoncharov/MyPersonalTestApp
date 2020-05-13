@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 import com.vgsoft.mypersonaltestapp.R;
-import com.vgsoft.mypersonaltestapp.model.MovieTrailer;
+import com.vgsoft.mypersonaltestapp.entiti.MovieTrailer;
 import com.vgsoft.mypersonaltestapp.utility.Utils;
 
 import java.util.ArrayList;

@@ -31,15 +31,18 @@ public class MainActivity extends AppCompatActivity {
     private ActionBarDrawerToggle mDrawerToggle;
     private View header;
 
+
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        new RealmController(this).saveSettings(0, 1, 0);
         mTitle = getTitle();
         mItemTitles = getResources().getStringArray(R.array.drawer_items);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerListView = (ListView) findViewById(R.id.left_drawer);
-        new RealmController(getApplicationContext()).removeAll();
         setupToolbar();
 
         ItemModel[] dItems = fillDataModel();

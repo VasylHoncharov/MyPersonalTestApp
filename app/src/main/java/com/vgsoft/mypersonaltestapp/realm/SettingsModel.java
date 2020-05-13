@@ -3,7 +3,7 @@ package com.vgsoft.mypersonaltestapp.realm;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;
 
-public class CursorModel extends RealmObject {
+public class SettingsModel extends RealmObject {
 
     @PrimaryKey
     private int id;
@@ -11,14 +11,7 @@ public class CursorModel extends RealmObject {
     private int totalPages;
     private int position;
 
-    public CursorModel() {
-    }
-
-    public CursorModel(int id, int page, int totalPages, int position) {
-        this.id = id;
-        this.page = page;
-        this.totalPages = totalPages;
-        this.position = position;
+    public SettingsModel() {
     }
 
     public int getId() {

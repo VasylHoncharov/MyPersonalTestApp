@@ -1,4 +1,4 @@
-package com.vgsoft.mypersonaltestapp.model;
+package com.vgsoft.mypersonaltestapp.entiti;
 
 import com.google.gson.annotations.SerializedName;
 

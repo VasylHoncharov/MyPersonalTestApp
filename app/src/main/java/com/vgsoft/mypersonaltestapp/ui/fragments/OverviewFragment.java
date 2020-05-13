@@ -1,7 +1,5 @@
 package com.vgsoft.mypersonaltestapp.ui.fragments;
 
-import android.content.Intent;
-import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,11 +11,12 @@ import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.gson.Gson;
 import com.squareup.picasso.Picasso;
 import com.vgsoft.mypersonaltestapp.R;
-import com.vgsoft.mypersonaltestapp.model.Movie;
-import com.vgsoft.mypersonaltestapp.model.MovieTrailer;
-import com.vgsoft.mypersonaltestapp.model.MovieTrailerResult;
+import com.vgsoft.mypersonaltestapp.entiti.Movie;
+import com.vgsoft.mypersonaltestapp.entiti.MovieTrailer;
+import com.vgsoft.mypersonaltestapp.entiti.MovieTrailerResult;
 import com.vgsoft.mypersonaltestapp.presenters.TrailerInformationView;
 import com.vgsoft.mypersonaltestapp.presenters.TrailerPresenter;
 import com.vgsoft.mypersonaltestapp.ui.adapters.TrailerAdapter;
@@ -47,7 +46,8 @@ public class OverviewFragment extends BaseFragment implements TrailerInformation
 
         // Supply index input as an argument.
         Bundle args = new Bundle();
-        args.putSerializable("movie", movie);
+        String argument = new Gson().toJson(movie, Movie.class);
+        args.putSerializable("movie", argument);
         f.setArguments(args);
 
         return f;
@@ -71,7 +71,7 @@ public class OverviewFragment extends BaseFragment implements TrailerInformation
         mMovieOverview = view.findViewById(R.id.movie_activity_overview);
         mMovieReleaseDate = view.findViewById(R.id.movie_activity_release_date);
         mMovieRating = view.findViewById(R.id.movie_activity_rating);
-        mMovie = (Movie) getArguments().getSerializable("movie");
+        mMovie = (Movie) new Gson().fromJson(getArguments().getString("movie"), Movie.class);
 
         presenter.getTrailer(mMovie.getId());
         setContent(mMovie);

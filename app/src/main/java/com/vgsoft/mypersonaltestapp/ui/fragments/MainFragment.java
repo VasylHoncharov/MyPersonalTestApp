@@ -11,22 +11,24 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.vgsoft.mypersonaltestapp.R;
-import com.vgsoft.mypersonaltestapp.model.Movie;
-import com.vgsoft.mypersonaltestapp.model.MoviePageResult;
+import com.vgsoft.mypersonaltestapp.entiti.Movie;
+import com.vgsoft.mypersonaltestapp.entiti.MoviePageResult;
 import com.vgsoft.mypersonaltestapp.presenters.MovieInformationView;
 import com.vgsoft.mypersonaltestapp.presenters.MoviePresenter;
-import com.vgsoft.mypersonaltestapp.realm.CursorModel;
 import com.vgsoft.mypersonaltestapp.realm.RealmController;
 import com.vgsoft.mypersonaltestapp.ui.adapters.MovieAdapter;
-import com.vgsoft.mypersonaltestapp.utility.EndlessRecyclerViewScrollListener;
 import com.vgsoft.mypersonaltestapp.utility.MovieClickListener;
+import com.vgsoft.mypersonaltestapp.utility.Utils;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class MainFragment extends BaseFragment implements MovieInformationView {
+    private static final String TAG = MainFragment.class.getName();
     private static int totalPages;
+    private int currentPage;
     private RecyclerView recyclerView;
-    private List<Movie> movieResults;
+    private ArrayList<Movie> movieResults = new ArrayList<>();
     private MovieAdapter movieAdapter;
     private MoviePresenter presenter;
     private LinearLayoutManager manager;
@@ -35,6 +37,7 @@ public class MainFragment extends BaseFragment implements MovieInformationView {
 
     public MainFragment() {
     }
+
 
     @Nullable
     @Override
@@ -48,37 +51,58 @@ public class MainFragment extends BaseFragment implements MovieInformationView {
         manager = new LinearLayoutManager(getActivity());
         recyclerView.setLayoutManager(manager);
         presenter = new MoviePresenter();
+        loadSettings();
         presenter.attachView(this);
-//        movieResults = db.getMoves();
-            presenter.loadPage(1);
 
-
-        EndlessRecyclerViewScrollListener scrollListener = new EndlessRecyclerViewScrollListener(manager) {
+        recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
-            public void onLoadMore(int page, int totalItemsCount, RecyclerView view) {
-                if ((page + 1) <= totalPages) {
-                    presenter.loadPage(page + 1);
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+
+                if (!recyclerView.canScrollVertically(1)
+                        && newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    if (currentPage != totalPages) {
+                        presenter.loadPage(currentPage + 1);
+                    }
+
                 }
             }
-        };
+        });
 
-        recyclerView.addOnScrollListener(scrollListener);
+        if (movieResults.size() == 0) {
+            presenter.loadPage(1);
+        } else {
+            setupAdapter(db.getSettings().getPosition());
+        }
+
         return view;
+    }
+
+    private void loadSettings() {
+        if (db.getSettings() == null) {
+            db.saveSettings(1, 1, 0);
+        }
+        currentPage = db.getSettings().getPage();
+        totalPages = db.getSettings().getTotalPages();
     }
 
     @Override
     public void onMoviePageResultReceived(MoviePageResult moviePageResult, int page) {
+        currentPage = page;
+        if (db.getSettings() == null) {
+            db.saveSettings(totalPages, page, 0);
+        } else {
+
+        }
         if (page == 1) {
             movieResults = moviePageResult.getMovieResult();
             totalPages = moviePageResult.getTotalPages();
-            movieAdapter = new MovieAdapter(movieResults, new MovieClickListener() {
-                @Override
-                public void onMovieClick(Movie movie) {
-                    FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                    fragmentManager.beginTransaction().addToBackStack(OverviewFragment.class.getName()).replace(R.id.content_frame, OverviewFragment.newInstance(movie)).commit();
-                }
-            });
-            recyclerView.setAdapter(movieAdapter);
+            db.removeAll();
+            for (Movie movie : moviePageResult.getMovieResult()) {
+                db.addOrUpdateMovie(movie);
+            }
+            setupAdapter(0);
+
         } else {
             List<Movie> movies = moviePageResult.getMovieResult();
             for (Movie movie : movies) {
@@ -86,13 +110,36 @@ public class MainFragment extends BaseFragment implements MovieInformationView {
                 movieAdapter.notifyItemInserted(movieResults.size() - 1);
             }
         }
-        db.addCursor(new CursorModel(777, page, totalPages, 0));
+
+        db.saveSettings(totalPages, page, 0);
+
+    }
+
+    private void setupAdapter(int position) {
+        movieAdapter = new MovieAdapter(movieResults, new MovieClickListener() {
+            @Override
+            public void onMovieClick(Movie movie, int position) {
+                db.saveSettings(totalPages, currentPage, position);
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+                fragmentManager.beginTransaction().addToBackStack(OverviewFragment.class.getName()).replace(R.id.content_frame, OverviewFragment.newInstance(movie)).commit();
+            }
+        });
+        recyclerView.setAdapter(movieAdapter);
+        recyclerView.scrollToPosition(position);
 
     }
 
     @Override
     public void onError(String error) {
-
+        Utils.makeToast(error);
+        if (movieResults.size() == 0) {
+            movieResults = db.getMoves(movieResults);
+            totalPages = db.getSettings().getTotalPages();
+            currentPage = db.getSettings().getPage();
+            setupAdapter(movieResults.size());
+        } else {
+            setupAdapter(movieResults.size());
+        }
     }
 
     @Override
@@ -100,18 +147,8 @@ public class MainFragment extends BaseFragment implements MovieInformationView {
         super.onPause();
         if (manager != null) {
             scrollPosition = manager.findFirstVisibleItemPosition();
+            db.saveSettings(totalPages, currentPage, scrollPosition);
         }
     }
-
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        if (manager != null) {
-            recyclerView.scrollToPosition(scrollPosition);
-        }
-
-    }
-
 
 }

@@ -1,6 +1,6 @@
 package com.vgsoft.mypersonaltestapp.network;
 
-import com.vgsoft.mypersonaltestapp.model.MoviePageResult;
+import com.vgsoft.mypersonaltestapp.entiti.MoviePageResult;
 
 import retrofit2.Call;
 import retrofit2.http.GET;

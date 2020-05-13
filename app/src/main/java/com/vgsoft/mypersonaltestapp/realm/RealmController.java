@@ -4,7 +4,9 @@ import android.content.Context;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.vgsoft.mypersonaltestapp.model.Movie;
+import com.vgsoft.mypersonaltestapp.entiti.Movie;
+
+import java.util.ArrayList;
 
 import io.realm.Realm;
 import io.realm.RealmConfiguration;
@@ -13,6 +15,7 @@ import io.realm.RealmResults;
 
 public class RealmController {
 
+    private static final String TAG = RealmController.class.getName();
     private Realm realm;
     private Gson gson = new Gson();
 
@@ -22,12 +25,22 @@ public class RealmController {
         realm = Realm.getDefaultInstance();
     }
 
-    public void addMovie(Movie movie) {
+    public void addOrUpdateMovie(Movie movie) {
+        Movie findMovie = realm.where(Movie.class).equalTo("id", movie.getId()).findFirst();
+        if (findMovie == null) {
+            addMovie(movie);
+        }
+
+        Log.i(TAG, "onMoviePageResultReceived: " + " id - " + movie.getId() + " name - " + movie.getTitle());
+
+    }
+
+    private void addMovie(Movie movie) {
         realm.beginTransaction();
 
         Movie realmObject = realm.createObject(Movie.class, movie.getId());
         int id = getNextKey();
-        Log.d("Realm", "id "+id);
+        Log.d("Realm", "id " + id);
         realmObject.setAdult(movie.isAdult());
         realmObject.setBackdropPath(movie.getBackdropPath());
         realmObject.setGenreId((RealmList<Integer>) movie.getGenreId());
@@ -45,72 +58,60 @@ public class RealmController {
         realm.commitTransaction();
     }
 
-    public void addCursor(CursorModel cursorModel){
+    public void saveSettings(int totalPages, int currentPage, int position) {
         realm.beginTransaction();
-        CursorModel realmObject = realm.where(CursorModel.class).equalTo("id", 777).findFirst();
-        if (realmObject == null){
-            CursorModel newRealmObject = realm.createObject(CursorModel.class, 777);
-            newRealmObject.setPage(cursorModel.getPage());
-            newRealmObject.setPosition(cursorModel.getPosition());
-            newRealmObject.setTotalPages(cursorModel.getTotalPages());
+        SettingsModel realmObject = realm.where(SettingsModel.class).equalTo("id", 777).findFirst();
+        if (realmObject == null) {
+            SettingsModel newRealmObject = realm.createObject(SettingsModel.class, 777);
+            newRealmObject.setTotalPages(totalPages);
+            newRealmObject.setPage(currentPage);
+            newRealmObject.setPosition(position);
+
         } else {
-            realmObject.setPage(cursorModel.getPage());
-            realmObject.setTotalPages(cursorModel.getTotalPages());
-            realmObject.setPosition(cursorModel.getPosition());
+            realmObject.setTotalPages(totalPages);
+            realmObject.setPage(currentPage);
+            realmObject.setPosition(position);
         }
         realm.commitTransaction();
+
     }
 
 
-    public CursorModel getCursor() {
-        return realm.where(CursorModel.class).equalTo("id", 777).findFirst();
+    public SettingsModel getSettings() {
+        return realm.where(SettingsModel.class).equalTo("id", 777).findFirst();
     }
 
-    public RealmResults<Movie> getMoves() {
-        return realm.where(Movie.class).findAll();
-    }
+    public ArrayList<Movie> getMoves(ArrayList<Movie> movies) {
+        RealmResults<Movie> dbMovies = realm.where(Movie.class).findAll();
+        for (Movie movie : dbMovies) {
+            Movie nMovie = new Movie();
 
-    public String getJson() {
-        String resaultAsString;
-        try (Realm realm = Realm.getDefaultInstance()) {
+            nMovie.setAdult(movie.isAdult());
+            nMovie.setBackdropPath(movie.getBackdropPath());
+            nMovie.setGenreId((RealmList<Integer>) movie.getGenreId());
+            nMovie.setOriginalLanguage(movie.getOriginalLanguage());
+            nMovie.setOriginalTitle(movie.getOriginalTitle());
+            nMovie.setOverview(movie.getOverview());
+            nMovie.setPopularity(movie.getPopularity());
+            nMovie.setPosterPath(movie.getPosterPath());
+            nMovie.setReleaseDate(movie.getReleaseDate());
+            nMovie.setTitle(movie.getTitle());
+            nMovie.setVideo(movie.isVideo());
+            nMovie.setVoteAverage(movie.getVoteAverage());
+            nMovie.setVoteCount(movie.getVoteCount());
 
-            RealmResults<Movie> realmResult=realm.where(Movie.class).findAll();
-            resaultAsString = gson.toJson(realm.copyFromRealm(realmResult));
+            movies.add(nMovie);
+
         }
-        return resaultAsString;
+        return movies;
     }
 
-
-
-    public void updateInfo(Movie fueling) {
-        realm.beginTransaction();
-
-        Movie realmObject = realm.where(Movie.class).equalTo("id", fueling.getId()).findFirst();
-        //for future
-
-        realm.commitTransaction();
-    }
-
-    public String removeItemById(int id, String res) {
-
-        Log.d("Realm", "id "+id);
-        if (id==getNextKey()-1){
-            realm.beginTransaction();
-            RealmResults<Movie> rows = realm.where(Movie.class).equalTo("id", id).findAll();
-            rows.deleteAllFromRealm();
-            realm.commitTransaction();
-            res = "ok";
-            return res;
-        }else{
-            res = "Вы можете удалить только последнюю заправку";
-            return res;
-        }
-    }
-
-    public void removeAll(){
+    public void removeAll() {
         RealmResults<Movie> results = realm.where(Movie.class).findAll();
+        RealmResults<SettingsModel> resultsCursor = realm.where(SettingsModel.class).findAll();
         realm.beginTransaction();
         results.deleteAllFromRealm();
+        resultsCursor.deleteAllFromRealm();
         realm.commitTransaction();
     }
 

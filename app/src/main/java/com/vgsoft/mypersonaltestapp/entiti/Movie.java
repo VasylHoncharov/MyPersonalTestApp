@@ -1,11 +1,10 @@
-package com.vgsoft.mypersonaltestapp.model;
+package com.vgsoft.mypersonaltestapp.entiti;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 import java.util.List;
 
-import io.realm.Realm;
 import io.realm.RealmList;
 import io.realm.RealmObject;
 import io.realm.annotations.PrimaryKey;

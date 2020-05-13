@@ -12,20 +12,20 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.squareup.picasso.Picasso;
 import com.vgsoft.mypersonaltestapp.R;
-import com.vgsoft.mypersonaltestapp.model.Movie;
+import com.vgsoft.mypersonaltestapp.entiti.Movie;
 import com.vgsoft.mypersonaltestapp.utility.MovieClickListener;
 import com.vgsoft.mypersonaltestapp.utility.Utils;
 
-import java.util.List;
+import java.util.ArrayList;
 
 
 @SuppressWarnings("ALL")
 public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHolder> {
 
     private final MovieClickListener movieClickListener;
-    private final List<Movie> movieList;
+    private final ArrayList<Movie> movieList;
 
-    public MovieAdapter(List<Movie> movieList, MovieClickListener movieClickListener) {
+    public MovieAdapter(ArrayList<Movie> movieList, MovieClickListener movieClickListener) {
         this.movieList = movieList;
         this.movieClickListener = movieClickListener;
     }
@@ -39,9 +39,10 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
     @Override
     public void onBindViewHolder(MovieViewHolder holder, int position) {
         Movie movie = this.movieList.get(position);
-        holder.bind(movie, movieClickListener);
+        holder.bind(movie, movieClickListener, position);
 
     }
+
 
     @Override
     public int getItemCount() {
@@ -72,8 +73,8 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
 
         }
 
-        public void bind(final Movie movie, final MovieClickListener movieClickListener) {
-            mMoviePlace.setLayoutParams(new LinearLayout.LayoutParams(getScreenWidth()/2, getMeasuredPosterHeight(getScreenWidth()/2)));
+        public void bind(final Movie movie, final MovieClickListener movieClickListener, final int position) {
+            mMoviePlace.setLayoutParams(new LinearLayout.LayoutParams(getScreenWidth() / 2, getMeasuredPosterHeight(getScreenWidth() / 2)));
             Picasso.with(mMoviePoster.getContext()).load(Utils.getPosterUri(movie.getPosterPath())).placeholder(R.drawable.placeholder).fit().centerCrop().into(mMoviePoster);
             mMovieName.setText(movie.getTitle());
             mMovieDate.setText(movie.getReleaseDate());
@@ -82,7 +83,7 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
             itemView.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    movieClickListener.onMovieClick(movie);
+                    movieClickListener.onMovieClick(movie, position);
                 }
             });
         }
@@ -90,13 +91,12 @@ public class MovieAdapter extends RecyclerView.Adapter<MovieAdapter.MovieViewHol
         private int getScreenWidth() {
             return Resources.getSystem().getDisplayMetrics().widthPixels;
         }
+
         private int getMeasuredPosterHeight(int width) {
             return (int) (width * 1.5f);
         }
 
     }
-
-
 
 
 }

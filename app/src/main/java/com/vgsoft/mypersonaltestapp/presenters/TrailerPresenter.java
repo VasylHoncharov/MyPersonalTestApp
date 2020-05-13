@@ -2,7 +2,7 @@ package com.vgsoft.mypersonaltestapp.presenters;
 
 import android.util.Log;
 
-import com.vgsoft.mypersonaltestapp.model.MovieTrailerResult;
+import com.vgsoft.mypersonaltestapp.entiti.MovieTrailerResult;
 import com.vgsoft.mypersonaltestapp.network.GetMovieTrailerService;
 import com.vgsoft.mypersonaltestapp.network.RetrofitInstance;
 import com.vgsoft.mypersonaltestapp.utility.Utils;
@@ -29,7 +29,8 @@ public class TrailerPresenter {
             @Override
             public void onResponse(Call<MovieTrailerResult> call, Response<MovieTrailerResult> response) {
                 MovieTrailerResult movieTrailerResult = response.body();
-                if (response.body().getTrailerResult().size() > 0) {
+                if (response.body() != null
+                        && response.body().getTrailerResult().size() > 0) {
                     view.onMovieTrailerResultReceived(movieTrailerResult);
                     Log.i("MovieActivity", "https://youtube.com/watch?v=" + response.body().getTrailerResult().get(0).getKey());
                 }

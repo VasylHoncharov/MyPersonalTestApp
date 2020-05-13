@@ -1,9 +1,9 @@
 package com.vgsoft.mypersonaltestapp.utility;
 
-import com.vgsoft.mypersonaltestapp.model.Movie;
+import com.vgsoft.mypersonaltestapp.entiti.Movie;
 
 @SuppressWarnings("ALL")
 public interface MovieClickListener {
-    void onMovieClick(Movie movie);
+    void onMovieClick(Movie movie, int position);
 
 }

@@ -1,6 +1,6 @@
 package com.vgsoft.mypersonaltestapp.network;
 
-import com.vgsoft.mypersonaltestapp.model.MovieTrailerResult;
+import com.vgsoft.mypersonaltestapp.entiti.MovieTrailerResult;
 
 
 import retrofit2.Call;
